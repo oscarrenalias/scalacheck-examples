@@ -1,19 +1,17 @@
 package com.company.test
 
-import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary._
-import org.scalacheck.Gen
-import org.scalacheck.Properties
 import com.company.account.Account
 import com.company.account.InsufficientFundsException
 import org.scalacheck.Prop._
+import org.scalacheck.{Prop, Arbitrary, Gen, Properties}
 
 /**
  * Custom data generator for the Account class
  */
 object GenAccount {
 
-	import com.company.ai.java.Account._
+	import com.company.account.Account._
 
     val MAX_ID : Int = 999999
     val MAX_AGE : Int = 200
@@ -40,7 +38,7 @@ object GenAccount {
 
 
 object AccountSpecification extends Properties("Account") {
-	import com.company.ai.java.Account._
+	import com.company.account.Account._
     import GenAccount._
 
     val genAcctAmt : Gen[(Account, Double)] = for {
@@ -66,6 +64,16 @@ object AccountSpecification extends Properties("Account") {
     //
     property("Withdraw-overdraft") = forAll(genAcctAmt) { case (acct: Account, amt: Double) =>
         amt > acct.getBalance() ==> {
+			val oldBalance = acct.getBalance()
+			if (amt <= oldBalance) {
+ 				acct.withdraw(amt)
+ 				acct.getBalance == oldBalance - amt
+			}
+			else {
+ 				Prop.throws(acct.withdraw(amt), classOf[InsufficientFundsException]) && acct.getBalance() == oldBalance
+			}
+		}
+        /*amt > acct.getBalance() ==> {
             val oldBalance = acct.getBalance()
             var wasException = false
             try {
@@ -75,7 +83,8 @@ object AccountSpecification extends Properties("Account") {
                 case e: InsufficientFundsException => wasException = true
             }
             acct.getBalance() == oldBalance && wasException
-        }
+        }*/
+
     }
 
     property("Rate-lowBalance, lowAge") = {
