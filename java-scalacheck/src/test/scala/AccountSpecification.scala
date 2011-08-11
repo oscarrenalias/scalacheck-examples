@@ -1,11 +1,11 @@
-package com.company.ai.test;
+package com.company.test
 
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Gen
 import org.scalacheck.Properties
-import com.company.ai.java.Account
-import com.company.ai.java.InsufficientFundsException
+import com.company.account.Account
+import com.company.account.InsufficientFundsException
 import org.scalacheck.Prop._
 
 /**
@@ -106,7 +106,7 @@ object AccountSpecification extends Properties("Account") {
  * compatible runners for ScalaCheck (could be done if ScalaCheck is used
  * from ScalaTest
  */
-object CheckAccount {
+object Runner {
     val rnd = new java.util.Random(100)
     //val parms = org.scalacheck.Test.Params(75,500,0,20,rnd,1,20)
 	val parms = org.scalacheck.Test.Params(75,500,0,20,rnd,1)
