@@ -1,4 +1,4 @@
-package com.company.ai.scala
+package com.company.scala
 
 /**
  * This file implements the same functionality as the equivalent Java class, but
