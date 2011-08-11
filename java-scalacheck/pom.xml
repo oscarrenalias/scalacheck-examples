@@ -87,7 +87,7 @@
                         <!-- this should allow us to execute the ScalaCheck tests -->
                         <launcher>
                             <id>test</id>
-                            <mainClass>com.company.scalacheck.Runner</mainClass>
+                            <mainClass>com.company.test.Runner</mainClass>
                         </launcher>
                     </launchers>
                 </configuration>
