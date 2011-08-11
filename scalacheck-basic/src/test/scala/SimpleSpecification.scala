@@ -34,8 +34,9 @@ object GroupedSpecifications extends Properties("AllApplicationSpecifications") 
  * compatible runners for ScalaCheck (could be done if ScalaCheck is used
  * from ScalaTest
  */
-object Runner {
-    def main(args: Array[String]) = {
+object SimpleProperties {
+
+	def run = {
 
 		// a very simple property
 		val workingProperty = forAll { (l1: List[Int], l2: List[Int]) =>
@@ -62,8 +63,5 @@ object Runner {
 		validSqrtProperty.check		// holds
 		combinedProperty1.check 	// fails
 		combinedProperty2.check 	// holds
-		BiggerSpecification.check	// holds
-		SecondSpecification.check	// holds
-		GroupedSpecifications.check	// holds
 	}
 }
