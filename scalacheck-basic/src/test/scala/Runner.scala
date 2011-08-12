@@ -9,5 +9,6 @@ object Runner {
 		GroupedSpecifications.check	// holds
 		SimpleGenerator.check		// holds?
 		RectangleSpecification.check // holds?
+		ArbitraryRectangleSpecification.check // holds?
 	}
 }
