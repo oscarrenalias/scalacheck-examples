@@ -25,21 +25,21 @@ case class Rectangle(val width:Double, val height:Double) {
 	// when the width is a multiple of 3, this will fail
 	lazy val area =  if(width % 11 ==0) (width * 1.0001 * height) else (width * height)
 	lazy val perimeter = (2*width) + (2*height)
+	def bigger(r:Rectangle) = true
 }
 
 /**
  * Specification with a Generator that is used to create case classes and verify the
- * data in them. Please note that we can create a generator that will create case classes
- * directly, so the property below can be specified in a more straightforward way.
+ * data in them.
  */
 object RectangleSpecification extends Properties("Rectangle specification") {
 
-	val widthHeightGen:Gen[(Double,Double)] = for {
+	val rectangleGen:Gen[(Rectangle, Double,Double)] = for {
 		height <- Gen.choose(0,9999)
 		width <- Gen.choose(0,9999)
-	} yield((width,height))
+	} yield((Rectangle(width, height), width,height))
 
-	property("Test area") = forAll(widthHeightGen) { (measures:(Double,Double)) =>
-		Rectangle(measures._1, measures._2).area == measures._1 * measures._2
-	}
+	property("Test area") = forAll(rectangleGen) { (input:(Rectangle,Double,Double)) => input match {
+		case(r, width, height) => r.area == width * height
+	}}
 }
