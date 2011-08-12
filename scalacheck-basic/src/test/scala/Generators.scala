@@ -72,4 +72,11 @@ object ArbitraryRectangleSpecification extends Properties("Rectangle specificati
 	property("Test biggerThan") = forAll{ (r1:Rectangle, r2:Rectangle) =>
 		(r1 biggerThan r2) == (r1.area > r2.area)
 	}
+
+	// please note that if not using an arbitrary generator, then we need to provide a generator parameter
+	// for each one of the random data parameters. Therefore, the following code is equivalent to the
+	// one above:
+	property("Test biggerThan") = forAll(rectangleGen, rectangleGen){ (r1:Rectangle, r2:Rectangle) =>
+		(r1 biggerThan r2) == (r1.area > r2.area)
+	}
 }
