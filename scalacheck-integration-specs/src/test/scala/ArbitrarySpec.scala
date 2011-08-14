@@ -8,7 +8,6 @@ import org.specs2.ScalaCheck
  * Case class that we're going to test
  */
 case class Rectangle(val width:Double, val height:Double) {
-	// when the width is a multiple of 3, this will fail
 	lazy val area =  width * height
 	lazy val perimeter = (2*width) + (2*height)
 	def biggerThan(r:Rectangle) = (area > r.area)
