@@ -14,7 +14,8 @@ case class Rectangle(val width:Double, val height:Double) {
 }
 
 /**
- * In this example, the arbitrary generator is kept in a separate object
+ * In this example, the arbitrary generator is kept in a separate object, but the generator and
+ * arbitrary code are exactly the same as when using "pure" ScalaCheck
  */
 object RectangleGenerator {
 	// generator for the Rectangle case class
