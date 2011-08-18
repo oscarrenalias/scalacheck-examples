@@ -10,5 +10,6 @@ object Runner {
 		SimpleGenerator.check		// holds?
 		RectangleSpecification.check // holds?
 		ArbitraryRectangleSpecification.check // holds?
+		DataCollectionSpecification.check // shows random data collection
 	}
 }
