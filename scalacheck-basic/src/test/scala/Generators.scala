@@ -21,13 +21,6 @@ object SimpleGenerator extends Properties("Simple sample generator") {
 	}
 }
 
-case class Rectangle(val width:Double, val height:Double) {
-	// when the width is a multiple of 3, this will fail
-	lazy val area =  if(width % 11 ==0) (width * 1.0001 * height) else (width * height)
-	lazy val perimeter = (2*width) + (2*height)
-	def biggerThan(r:Rectangle) = (area > r.area)
-}
-
 /**
  * Specification with a Generator that is used to create case classes and verify the
  * data in them.
@@ -49,16 +42,9 @@ object RectangleSpecification extends Properties("Rectangle specification") {
 }
 
 /**
- * This property shows the advantage of using an arbitrary generator, as ScalaCheck will then
- * be able to automatically generate the test data using the implicit arbitrary generator in scope,
- * and we don't need to provide a generator object as a parameter to the forAll method
- *
- * In this case, the arbitrary generator is by default in the scope since it's in the same object
- * as the property that uses it, but if that's not the case, simply use an import statement to import
- * the arbitrary function
+ * Generator of case objects for the Rectangle class, as well as an arbitrary generator
  */
-object ArbitraryRectangleSpecification extends Properties("Rectangle specification with an Arbitrary generator") {
-
+object RectangleGenerator {
 	// generator for the Rectangle case class
 	val rectangleGen:Gen[Rectangle] = for {
 		height <- Gen.choose(0,9999)
@@ -67,6 +53,18 @@ object ArbitraryRectangleSpecification extends Properties("Rectangle specificati
 
 	// Arbitrary generator of rectangles
 	implicit val arbRectangle: Arbitrary[Rectangle] = Arbitrary(rectangleGen)
+}
+
+/**
+ * This property shows the advantage of using an arbitrary generator, as ScalaCheck will then
+ * be able to automatically generate the test data using the implicit arbitrary generator in scope,
+ * and we don't need to provide a generator object as a parameter to the forAll method
+ *
+ * In this case, the arbitrary generator is in the scope after the import statement to import
+ * the arbitrary function
+ */
+object ArbitraryRectangleSpecification extends Properties("Rectangle specification with an Arbitrary generator") {
+	import RectangleGenerator._
 
 	// generate two random rectangles and check which one is bigger
 	property("Test biggerThan") = forAll{ (r1:Rectangle, r2:Rectangle) =>
