@@ -4,7 +4,8 @@ import org.junit.Assert._
 import org.junit.Test
 import com.company.scalacheck.Rectangle
 import org.scalacheck.Test.Params
-import org.scalacheck.{ConsoleReporter, Prop, Arbitrary, Gen, Test => SchkTest}
+import org.scalacheck.{ConsoleReporter, Prop, Properties, Arbitrary, Gen, Test => SchkTest}
+import org.scalacheck.Prop._
 
 /**
  * Generator of case objects for the Rectangle class, as well as an arbitrary generator
@@ -83,3 +84,4 @@ class ScalaJUnitTest {
 		assertTrue(validTest)
 	}
 }
+
