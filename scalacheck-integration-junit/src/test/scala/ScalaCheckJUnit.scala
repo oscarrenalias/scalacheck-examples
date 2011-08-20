@@ -55,10 +55,7 @@ class ScalaCheckJUnitPropertiesRunner(suiteClass: java.lang.Class[Properties]) e
 
 	private def createDescription(props: Properties): Description = {
 		val description = Description.createSuiteDescription(props.name)
-		for (tuple <- properties.properties) {
-			description.addChild(Description.createTestDescription(tuple._2.getClass, tuple._1))
-		}
-
+		props.properties.foreach(p => Description.createTestDescription(p._2.getClass, p._1))
 		description
 	}
 
