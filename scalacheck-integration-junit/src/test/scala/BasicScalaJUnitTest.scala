@@ -21,6 +21,16 @@ object RectangleGenerator {
 	implicit val arbRectangle: Arbitrary[Rectangle] = Arbitrary(rectangleGen)
 }
 
+class ScalaJUnitSimpleTest {
+	val validProperty = Prop.forAll { (a:String) =>
+		(a.length > 0) ==> (a + a == a.concat(a))
+	}	
+	
+	@Test def testSquareRoot = {
+		assertTrue(SchkTest.check(Params(testCallback = ConsoleReporter()), validProperty).passed)
+	}
+}
+
 /**
  * This is an example of a JUnit test case implemented in Scala, where the actual testing logic is implemented
  * as ScalaCheck property checks that are evaluated with JUnit's assertTrue assertion. Each one of the test
