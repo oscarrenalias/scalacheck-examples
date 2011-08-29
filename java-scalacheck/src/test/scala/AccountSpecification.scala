@@ -4,6 +4,7 @@ import com.company.account.Account
 import com.company.account.InsufficientFundsException
 import org.scalacheck.Prop._
 import org.scalacheck.{Prop, Arbitrary, Gen, Properties}
+import com.company.account.Account
 
 /**
  * Custom data generator for the Account class
@@ -46,11 +47,28 @@ object AccountSpecification extends Properties("Account") {
 		amt <- Gen.choose(0.01, MAX_BALANCE)
 	} yield (acct, amt)
 
+	// In this example this arbitrary object is not used, but this is how it would look like, if required:
+	implicit val arbAccountAmount: Arbitrary[(Account, Double)] =
+					Arbitrary(genAcctAmt)
+
 	property("Deposit") = forAll(genAcctAmt) {
 		case (acct: Account, amt: Double) =>
 			val oldBalance = acct.getBalance()
 			acct.deposit(amt)
 			acct.getBalance() == oldBalance + amt
+	}
+
+	// This is the same property checks as above, but uses the arbitrary generator of
+	// tuples of type (Account, Double) instead of providing a reference to the generator
+	// function. Pleaes note how the code is a little longer due to the extra type-related
+	//
+	property("Deposit-with-Arbitrary") = forAll { (input:(Account,Double)) =>
+		input match {
+			case (acct: Account, amt: Double) =>
+				val oldBalance = acct.getBalance()
+				acct.deposit(amt)
+				acct.getBalance() == oldBalance + amt
+		}
 	}
 
 	property("Withdraw-normal") = forAll(genAcctAmt) {
@@ -86,16 +104,12 @@ object AccountSpecification extends Properties("Account") {
 		}
 	}
 
-	property("Rate-highBalance") = forAll {
-		acct: Account =>
-			acct.getBalance() >= GOLD_BALANCE ==>
-							(acct.getRate() == GOLD_INTEREST)
+	property("Rate-highBalance") = forAll { (acct: Account) =>
+			acct.getBalance() >= GOLD_BALANCE ==> (acct.getRate() == GOLD_INTEREST)
 	}
 
-	property("Rate-highAge") = forAll {
-		acct: Account =>
-			acct.getAge() >= GOLD_AGE ==>
-							(acct.getRate() == GOLD_INTEREST)
+	property("Rate-highAge") = forAll { acct: Account =>
+			acct.getAge() >= GOLD_AGE ==> (acct.getRate() == GOLD_INTEREST)
 	}
 
 	property("CreditInterest") = forAll {
