@@ -5,6 +5,7 @@ import com.company.account.InsufficientFundsException
 import org.scalacheck.Prop._
 import org.scalacheck.{Prop, Arbitrary, Gen, Properties}
 import com.company.account.Account
+import scala.Some
 
 /**
  * Custom data generator for the Account class
@@ -58,10 +59,11 @@ object AccountSpecification extends Properties("Account") {
 			acct.getBalance() == oldBalance + amt
 	}
 
-	// This is the same property checks as above, but uses the arbitrary generator of
-	// tuples of type (Account, Double) instead of providing a reference to the generator
-	// function. Pleaes note how the code is a little longer due to the extra type-related
-	//
+	/**
+	 * This is the same property checks as above, but uses the arbitrary generator of
+	 * tuples of type (Account, Double) instead of providing a reference to the generator
+	 * function. PLease note how the code is a little longer due to the extra type-related boilerplate
+	 */
 	property("Deposit-with-Arbitrary") = forAll { (input:(Account,Double)) =>
 		input match {
 			case (acct: Account, amt: Double) =>
@@ -80,19 +82,14 @@ object AccountSpecification extends Properties("Account") {
 			}
 	}
 
+	//
 	// This test can be done more elegantly in combination with ScalaTest
 	//
 	property("Withdraw-overdraft") = forAll(genAcctAmt) {
 		case (acct: Account, amt: Double) =>
 			amt > acct.getBalance() ==> {
 				val oldBalance = acct.getBalance()
-				if (amt <= oldBalance) {
-					acct.withdraw(amt)
-					acct.getBalance == oldBalance - amt
-				}
-				else {
-					Prop.throws(acct.withdraw(amt), classOf[InsufficientFundsException]) && acct.getBalance() == oldBalance
-				}
+				Prop.throws(acct.withdraw(amt), classOf[InsufficientFundsException]) && acct.getBalance() == oldBalance
 			}
 	}
 
