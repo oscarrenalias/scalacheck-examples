@@ -19,6 +19,11 @@
       <name>Cloudera Releases</name>
       <url>https://repository.cloudera.com/content/repositories/releases</url>
     </repository>
+    <repository>
+        <id>maven</id>
+        <name>Maven</name>
+        <url>http://repo2.maven.org/maven2</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -30,7 +35,7 @@
   </pluginRepositories>
 
   <properties>
-    <scala.version>2.8.1</scala.version>
+    <scala.version>2.9.0</scala.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -55,8 +60,8 @@
     </dependency>
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
-      <artifactId>specs_2.8.1</artifactId>
-      <version>1.6.6</version>
+      <artifactId>specs_2.9.0</artifactId>
+      <version>1.6.8</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -75,7 +80,12 @@
         <artifactId>scalacheck_2.9.0-1</artifactId>
         <version>1.9</version>
     </dependency>
-
+    <dependency>
+        <groupId>org.mockito</groupId>
+          <artifactId>mockito-all</artifactId>
+          <version>1.9.0-rc1</version>
+          <scope>test</scope>
+    </dependency>
   </dependencies>
 
 
@@ -107,6 +117,14 @@
           <jvmArgs>
             <jvmArg>-Xss1m</jvmArg>
           </jvmArgs>
+            <launchers>
+                <!-- this allows us to execute the ScalaCheck tests -->
+                <launcher>
+                    <id>test</id>
+                    <mainClass>com.company.hadoop.tests.TestRunner</mainClass>
+                </launcher>
+            </launchers>
+
         </configuration>
       </plugin>
 
