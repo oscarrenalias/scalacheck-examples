@@ -4,9 +4,9 @@ import org.scalacheck.Prop._
 import org.scalacheck.{Arbitrary, Gen, Properties}
 import java.lang.Long
 import org.apache.hadoop.mrunit.types.Pair
-import org.apache.hadoop.io.{LongWritable, IntWritable, Text}
 import com.company.hadoop.WordCount.{Map, Reduce}
 import org.apache.hadoop.mrunit.mapreduce.{MapDriver, ReduceDriver}
+import org.apache.hadoop.io.{LongWritable, IntWritable, Text}
 
 /**
  * These are the generators and arbitrary objects that will generate random IntWritable and Text objects
@@ -27,7 +27,7 @@ object HadoopGenerators {
 		num <- Gen.choose(0, upperRange)
 	} yield(new LongWritable(num))
 
-	// geneerator of lists of IntWritable and Text
+	// generator of lists of IntWritable and Text
 	val intWritableListGen: Gen[List[IntWritable]] = Gen.listOf(intWritableGen)
 	val textListGen: Gen[List[Text]] = Gen.listOf(textGen)
 	// arbitrary generators for the ones above
@@ -56,7 +56,7 @@ object HadoopImplicits {
 	implicit def Text2String(x:Text) = x.toString
 	implicit def String2Text(x:String) = new Text(x)
 
-	// convert from MRUnit's Pair to a tuple
+	// convert from MRUnit's Pair to a tuple for easier handling
 	implicit def Pair2Tuple[U,T](p:Pair[U,T]):Tuple2[U,T] = (p.getFirst, p.getSecond)
 }
 
@@ -112,20 +112,23 @@ object WordCountSpecification extends Properties("Mapper and reducer tests") {
 		results.headOption.map(_._1 == value).getOrElse(true) == true
 	}
 
-	property("The mapper correctly maps lines with multiple words") = forAll(longWritableGen(99999), textLineGen) {
-		// TODO: implement the required check logic
-		(key:LongWritable, value:Text) =>
-			val driver = new MapDriver(mapper)
+	property("The mapper correctly maps lines with multiple words") = {
+		// with this case object we can use the equality operator later
+		case object one extends IntWritable(1)
 
-			// collect data based on the number of words in the input string
-			collect("Number of words = " + value.split(" ").size) {
-				driver.withInput(key, value)
-				val results = driver.run
+		forAll(longWritableGen(99999), textLineGen) {
+			(key:LongWritable, value:Text) =>
+				val driver = new MapDriver(mapper)
 
-				//results.headOption.map(_._1 == value).getOrElse(true) == true
+				// collect and print data based on the number of words in the input string
+				collect("Number of words = " + value.split(" ").size) {
+					driver.withInput(key, value)
+					val results = driver.run
 
-				true
-			}
+					// all keys should have a pair where the second value is 1 (as an IntWritable)
+					results.forall(one == _._2)
+				}
+		}
 	}
 }
 
