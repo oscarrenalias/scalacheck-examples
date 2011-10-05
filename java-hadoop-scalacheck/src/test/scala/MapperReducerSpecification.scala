@@ -46,20 +46,16 @@ object HadoopGenerators {
 
 	// generator of lists of IntWritables
 	val intWritableListGen: Gen[List[IntWritable]] = Gen.listOf(intWritableGen)
-	// arbitrary generators for the ones above
-	implicit val arbIntWritableListGen: Arbitrary[List[IntWritable]] = Arbitrary(intWritableListGen)
-	val arbTextListGen: Arbitrary[List[Text]] = Arbitrary(Gen.listOf(textGen))
-	// arbitrary generator for Text objects
-	implicit val arbText: Arbitrary[Text] = Arbitrary(textGen)
-	// arbitrary generator for LongWritable objects
-	implicit val arbLongWritable: Arbitrary[LongWritable] = Arbitrary(longWritableGen(99999))
+
+	// generates lists of Text objects
+	val textListGen:Gen[List[Text]] = Gen.listOf(textGen)
 
 	// this is the key generator for the mapper tests: it generates a tuple where the first element is a list of random words
 	// for the mapper, while the second element is the actual number of words in the text; the idea here is that in the
   // verification of the property, we only need to make sure that the mapper generated a list of words whose number of
   // elements is exactly the same one as calculated in the generator (which we already know is the correct length)
   val textLineGenWithCount: Gen[(Text,Int)] = for {
-    words <- Gen.listOf(textGen)  // generates a line of strings
+    words <- textListGen  // generates a line of strings
   } yield((new Text(words.mkString(" ")), words.filter(_.toString.trim != "").size))
   // the second part of the yield() clause above is neede because textGen may generate empty words, which are ignored
   // the mapper, so we need to make sure that when counting the correct number of words, we ignore the empty ones
@@ -103,7 +99,7 @@ object WordCountSpecification extends Properties("Mapper and reducer tests") {
   }
 
 
-	property("The mapper correctly maps single words") = forAll {(key:LongWritable, value:Text) =>
+	property("The mapper correctly maps single words") = forAll(longWritableGen(99999), textGen) {(key:LongWritable, value:Text) =>
 		val driver = new MapDriver(mapper)
 
 		// we only need to verify that for input strings containing a single word, the mapper always returns that single word
