@@ -16,15 +16,15 @@ import com.company.scalacheck.support.ScalaCheckJUnitAdapter
  * for JUnit is that all properties are run from a single test case.
  */
 class ScalaJUnitSupportTest extends Properties("JUnit Support Example") with ScalaCheckJUnitAdapter {
-	property("valid property") = forAll { (a:String) =>
-		a == a
-	}
+  property("valid property") = forAll { (a:String) =>
+    a == a
+  }
 
-	property("failed property") = forAll { (a:String) =>
-		// this example classifies input strings based on their length, and only for non-empty strings
-		// shorter than 10 characters
-		(a.length > 0 && a.length <= 10) ==> collect(a.length) {
-			(a != "b")
-		}
-	}
+  property("failed property") = forAll { (a:String) =>
+    // this example classifies input strings based on their length, and only for non-empty strings
+    // shorter than 10 characters
+    (a.length > 0 && a.length <= 10) ==> collect(a.length) {
+      (a != "b")
+    }
+  }
 }

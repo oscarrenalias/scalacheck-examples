@@ -12,109 +12,109 @@ import scala.Some
  */
 object GenAccount {
 
-	import com.company.account.Account._
+  import com.company.account.Account._
 
-	val MAX_ID: Int = 999999
-	val MAX_AGE: Int = 200
-	val MAX_BALANCE: Double = 10 * GOLD_BALANCE
+  val MAX_ID: Int = 999999
+  val MAX_AGE: Int = 200
+  val MAX_BALANCE: Double = 10 * GOLD_BALANCE
 
-	/**
-	 * This method takes care of generating new objects of the Account class, using
-	 * random values defined within a certain range
-	 */
-	def genAccount(maxId: Int, maxAge: Int, maxBalance: Double): Gen[Account] = for {
-		id <- Gen.choose(0, maxId)
-		age <- Gen.choose(0, maxAge)
-		balance <- Gen.choose(0, maxBalance)
-	} yield new Account(id, age, balance)
+  /**
+   * This method takes care of generating new objects of the Account class, using
+   * random values defined within a certain range
+   */
+  def genAccount(maxId: Int, maxAge: Int, maxBalance: Double): Gen[Account] = for {
+    id <- Gen.choose(0, maxId)
+    age <- Gen.choose(0, maxAge)
+    balance <- Gen.choose(0, maxBalance)
+  } yield new Account(id, age, balance)
 
-	/**
-	 * The Arbitrary generator creates test data of any type.
-	 * This must be defined as an implicit value or function and imported into the scope of the 
-	 * ScalaCheck tests so that ScalaCheck can generate test data of the required type
-	 */
-	implicit val arbAccount: Arbitrary[Account] =
-		Arbitrary(genAccount(MAX_ID, MAX_AGE, MAX_BALANCE))
+  /**
+   * The Arbitrary generator creates test data of any type.
+   * This must be defined as an implicit value or function and imported into the scope of the 
+   * ScalaCheck tests so that ScalaCheck can generate test data of the required type
+   */
+  implicit val arbAccount: Arbitrary[Account] =
+    Arbitrary(genAccount(MAX_ID, MAX_AGE, MAX_BALANCE))
 }
 
 
 object AccountSpecification extends Properties("Account") {
 
-	import com.company.account.Account._
-	import GenAccount._
+  import com.company.account.Account._
+  import GenAccount._
 
-	val genAcctAmt: Gen[(Account, Double)] = for {
-		acct <- Arbitrary.arbitrary[Account]
-		amt <- Gen.choose(0.01, MAX_BALANCE)
-	} yield (acct, amt)
+  val genAcctAmt: Gen[(Account, Double)] = for {
+    acct <- Arbitrary.arbitrary[Account]
+    amt <- Gen.choose(0.01, MAX_BALANCE)
+  } yield (acct, amt)
 
-	// In this example this arbitrary object is not used, but this is how it would look like, if required:
-	implicit val arbAccountAmount: Arbitrary[(Account, Double)] =
-					Arbitrary(genAcctAmt)
+  // In this example this arbitrary object is not used, but this is how it would look like, if required:
+  implicit val arbAccountAmount: Arbitrary[(Account, Double)] =
+          Arbitrary(genAcctAmt)
 
-	property("Deposit") = forAll(genAcctAmt) {
-		case (acct: Account, amt: Double) =>
-			val oldBalance = acct.getBalance()
-			acct.deposit(amt)
-			acct.getBalance() == oldBalance + amt
-	}
+  property("Deposit") = forAll(genAcctAmt) {
+    case (acct: Account, amt: Double) =>
+      val oldBalance = acct.getBalance()
+      acct.deposit(amt)
+      acct.getBalance() == oldBalance + amt
+  }
 
-	/**
-	 * This is the same property checks as above, but uses the arbitrary generator of
-	 * tuples of type (Account, Double) instead of providing a reference to the generator
-	 * function. PLease note how the code is a little longer due to the extra type-related boilerplate
-	 */
-	property("Deposit-with-Arbitrary") = forAll { (input:(Account,Double)) =>
-		input match {
-			case (acct: Account, amt: Double) =>
-				val oldBalance = acct.getBalance()
-				acct.deposit(amt)
-				acct.getBalance() == oldBalance + amt
-		}
-	}
+  /**
+   * This is the same property checks as above, but uses the arbitrary generator of
+   * tuples of type (Account, Double) instead of providing a reference to the generator
+   * function. PLease note how the code is a little longer due to the extra type-related boilerplate
+   */
+  property("Deposit-with-Arbitrary") = forAll { (input:(Account,Double)) =>
+    input match {
+      case (acct: Account, amt: Double) =>
+        val oldBalance = acct.getBalance()
+        acct.deposit(amt)
+        acct.getBalance() == oldBalance + amt
+    }
+  }
 
-	property("Withdraw-normal") = forAll(genAcctAmt) {
-		case (acct: Account, amt: Double) =>
-			amt <= acct.getBalance() ==> {
-				val oldBalance = acct.getBalance()
-				acct.withdraw(amt)
-				acct.getBalance() == oldBalance - amt
-			}
-	}
+  property("Withdraw-normal") = forAll(genAcctAmt) {
+    case (acct: Account, amt: Double) =>
+      amt <= acct.getBalance() ==> {
+        val oldBalance = acct.getBalance()
+        acct.withdraw(amt)
+        acct.getBalance() == oldBalance - amt
+      }
+  }
 
-	//
-	// This test can be done more elegantly in combination with ScalaTest
-	//
-	property("Withdraw-overdraft") = forAll(genAcctAmt) {
-		case (acct: Account, amt: Double) =>
-			amt > acct.getBalance() ==> {
-				val oldBalance = acct.getBalance()
-				Prop.throws(acct.withdraw(amt), classOf[InsufficientFundsException]) && acct.getBalance() == oldBalance
-			}
-	}
+  //
+  // This test can be done more elegantly in combination with ScalaTest
+  //
+  property("Withdraw-overdraft") = forAll(genAcctAmt) {
+    case (acct: Account, amt: Double) =>
+      amt > acct.getBalance() ==> {
+        val oldBalance = acct.getBalance()
+        Prop.throws(acct.withdraw(amt), classOf[InsufficientFundsException]) && acct.getBalance() == oldBalance
+      }
+  }
 
-	property("Rate-lowBalance, lowAge") = {
-		val gen = genAccount(MAX_ID, GOLD_AGE - 1, GOLD_BALANCE - .01)
+  property("Rate-lowBalance, lowAge") = {
+    val gen = genAccount(MAX_ID, GOLD_AGE - 1, GOLD_BALANCE - .01)
 
-		forAll(gen) {
-			acct: Account => acct.getRate() == STD_INTEREST
-		}
-	}
+    forAll(gen) {
+      acct: Account => acct.getRate() == STD_INTEREST
+    }
+  }
 
-	property("Rate-highBalance") = forAll { (acct: Account) =>
-			acct.getBalance() >= GOLD_BALANCE ==> (acct.getRate() == GOLD_INTEREST)
-	}
+  property("Rate-highBalance") = forAll { (acct: Account) =>
+      acct.getBalance() >= GOLD_BALANCE ==> (acct.getRate() == GOLD_INTEREST)
+  }
 
-	property("Rate-highAge") = forAll { acct: Account =>
-			acct.getAge() >= GOLD_AGE ==> (acct.getRate() == GOLD_INTEREST)
-	}
+  property("Rate-highAge") = forAll { acct: Account =>
+      acct.getAge() >= GOLD_AGE ==> (acct.getRate() == GOLD_INTEREST)
+  }
 
-	property("CreditInterest") = forAll {
-		acct: Account =>
-			val oldBalance = acct.getBalance()
-			acct.creditInterest()
-			acct.getBalance() == oldBalance + (oldBalance * acct.getRate())
-	}
+  property("CreditInterest") = forAll {
+    acct: Account =>
+      val oldBalance = acct.getBalance()
+      acct.creditInterest()
+      acct.getBalance() == oldBalance + (oldBalance * acct.getRate())
+  }
 }
 
 /**
@@ -123,13 +123,13 @@ object AccountSpecification extends Properties("Account") {
  * from ScalaTest
  */
 object Runner {
-	val rnd = new java.util.Random(100)
-	//val parms = org.scalacheck.Test.Params(75,500,0,20,rnd,1,20)
-	val parms = org.scalacheck.Test.Params(75, 500, 0, 20, rnd, 1)
+  val rnd = new java.util.Random(100)
+  //val parms = org.scalacheck.Test.Params(75,500,0,20,rnd,1,20)
+  val parms = org.scalacheck.Test.Params(75, 500, 0, 20, rnd, 1)
 
-	def apply() = {
-		AccountSpecification.check(parms)
-	}
+  def apply() = {
+    AccountSpecification.check(parms)
+  }
 
-	def main(args: Array[String]) = apply()
+  def main(args: Array[String]) = apply()
 }

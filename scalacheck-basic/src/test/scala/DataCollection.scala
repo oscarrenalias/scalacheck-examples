@@ -41,8 +41,8 @@ object DataCollectionSpecification extends Properties("Data collection examples"
 	}
 
 	/**
-	 * Here we use the “binary” version of Prop.classify to classify our random rectangle objects into “taller” or “wider”,
-	 * and then with Prop.collect we’ve collected the data using our previous method. The output now is a two-level
+	 * Here we use the "binary" version of Prop.classify to classify our random rectangle objects into "taller" or "wider",
+	 * and then with Prop.collect we've collected the data using our previous method. The output now is a two-level
 	 * grouping of our data.
 	 * The example also shows how Prop.classify and Prop.collect can be combined within the same property check,
 	 * and even multiple calls can be nested to obtain a more granular classification

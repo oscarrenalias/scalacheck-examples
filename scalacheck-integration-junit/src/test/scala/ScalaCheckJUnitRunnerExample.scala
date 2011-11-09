@@ -16,22 +16,22 @@ import org.scalacheck.{Gen, Properties}
  */
 @RunWith(classOf[ScalaCheckJUnitPropertiesRunner])
 class ScalaCheckRunnerTest extends Properties("Rectangle property suite") {
-	import RectangleGenerator._
+  import RectangleGenerator._
 
-	// This holds true and will be reported as a passed test by JUnit
-	property("Test biggerThan") = forAll { (r1:Rectangle, r2:Rectangle) =>
-		(r1 biggerThan r2) == (r1.area > r2.area)
-	}
+  // This holds true and will be reported as a passed test by JUnit
+  property("Test biggerThan") = forAll { (r1:Rectangle, r2:Rectangle) =>
+    (r1 biggerThan r2) == (r1.area > r2.area)
+  }
 
-	// This does not hold true and will be reported as a test error by JUnit
-	property("Failed test") = forAll {(a:Int) =>
-		a == 1
-	}
+  // This does not hold true and will be reported as a test error by JUnit
+  property("Failed test") = forAll {(a:Int) =>
+    a == 1
+  }
 
-	// This holds true, and ScalaCheck will output the test data grouping to the console
-	property("Test with collection of data") = forAll {(a:Int) =>
-		(a > 0 && a <= 10) ==> collect(a) {
-			2 * a == a + a
-		}
-	}
+  // This holds true, and ScalaCheck will output the test data grouping to the console
+  property("Test with collection of data") = forAll {(a:Int) =>
+    (a > 0 && a <= 10) ==> collect(a) {
+      2 * a == a + a
+    }
+  }
 }

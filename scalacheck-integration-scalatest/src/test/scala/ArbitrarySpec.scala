@@ -11,9 +11,9 @@ import org.scalacheck.Prop.forAll
  * Case class that we're going to test
  */
 case class Rectangle(val width:Double, val height:Double) {
-	lazy val area = width * height
-	lazy val perimeter = (2*width) + (2*height)
-	def biggerThan(r:Rectangle) = (area > r.area)
+  lazy val area = width * height
+  lazy val perimeter = (2*width) + (2*height)
+  def biggerThan(r:Rectangle) = (area > r.area)
 }
 
 /**
@@ -21,14 +21,14 @@ case class Rectangle(val width:Double, val height:Double) {
  * exactly the same as when using ScalaCheck
  */
 object RectangleGenerator {
-	// generator for the Rectangle case class
-	val rectangleGen:Gen[Rectangle] = for {
-		height <- Gen.choose(0,9999)
-		width <- Gen.choose(0,9999)
-	} yield(Rectangle(width, height))
+  // generator for the Rectangle case class
+  val rectangleGen:Gen[Rectangle] = for {
+    height <- Gen.choose(0,9999)
+    width <- Gen.choose(0,9999)
+  } yield(Rectangle(width, height))
 
-	// Arbitrary generator of rectangles
-	implicit val arbRectangle: Arbitrary[Rectangle] = Arbitrary(rectangleGen)
+  // Arbitrary generator of rectangles
+  implicit val arbRectangle: Arbitrary[Rectangle] = Arbitrary(rectangleGen)
 }
 
 /**
@@ -42,18 +42,18 @@ object RectangleGenerator {
  * trait in this case).
  */
 class ArbitraryRectangleSpec extends PropSpec with PropertyChecks with MustMatchers {
-	import com.company.scalacheck.RectangleGenerator._
+  import com.company.scalacheck.RectangleGenerator._
 
-	property("A rectangle should correctly calculate its area") { 
-		forAll { (r:Rectangle) =>
-			r.area must be (r.width * r.height)
-		}
-	}
-	property("A rectangle should be able to identify which rectangle is bigger") {
-		forAll { (r1:Rectangle, r2:Rectangle) =>
-			(r1 biggerThan r2) must be(r1.area > r2.area)
-		}
-	}
+  property("A rectangle should correctly calculate its area") { 
+    forAll { (r:Rectangle) =>
+      r.area must be (r.width * r.height)
+    }
+  }
+  property("A rectangle should be able to identify which rectangle is bigger") {
+    forAll { (r1:Rectangle, r2:Rectangle) =>
+      (r1 biggerThan r2) must be(r1.area > r2.area)
+    }
+  }
 }
 
 /**
@@ -61,16 +61,16 @@ class ArbitraryRectangleSpec extends PropSpec with PropertyChecks with MustMatch
  * ScalaCheck style property checks via the Checkers trait
  */
 class ArbitraryRectangleWithCheckersSpec extends PropSpec with Checkers {
-	import com.company.scalacheck.RectangleGenerator._
-	
-	property("A rectangle should correctly calculate its area") { 
-		check(forAll { (r:Rectangle) =>
-			r.area == (r.width * r.height)
-		})
-	}
-	property("A rectangle should be able to identify which rectangle is bigger") {
-		check(forAll { (r1:Rectangle, r2:Rectangle) =>
-			(r1 biggerThan r2) == (r1.area > r2.area)
-		})
-	}
+  import com.company.scalacheck.RectangleGenerator._
+  
+  property("A rectangle should correctly calculate its area") { 
+    check(forAll { (r:Rectangle) =>
+      r.area == (r.width * r.height)
+    })
+  }
+  property("A rectangle should be able to identify which rectangle is bigger") {
+    check(forAll { (r1:Rectangle, r2:Rectangle) =>
+      (r1 biggerThan r2) == (r1.area > r2.area)
+    })
+  }
 }
