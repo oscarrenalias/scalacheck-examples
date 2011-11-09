@@ -9,5 +9,5 @@ scalaVersion := "2.9.1"
 // package dependencies
 libraryDependencies ++= Seq(
 	"org.scalatest" %% "scalatest" % "1.6.1",
-	"org.scala-tools.testing" %% "scalacheck" % "1.9" % "test"
+	"org.scala-tools.testing" %% "scalacheck" % "1.9"
 )
