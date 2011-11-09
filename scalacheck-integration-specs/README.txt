@@ -1,6 +1,6 @@
 Some examples of the integration of ScalaCheck with Scala Specs.
 
-The examples are built with SBT 0.7.7, which is requried to be in your path.
+The examples are built with SBT 0.11, which is requried to be in your path.
 
 In order to build and run the examples, use the following command:
 
