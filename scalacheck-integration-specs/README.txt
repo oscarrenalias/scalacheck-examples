@@ -7,3 +7,5 @@ In order to build and run the examples, use the following command:
     sbt reload test
 
 Or start the SBT command prompt and then type first "reload" and then "test".
+
+Specs2 1.5 and ScalaCheck 1.9 are required.
