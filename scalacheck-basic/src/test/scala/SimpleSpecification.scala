@@ -20,7 +20,7 @@ object BiggerSpecification extends Properties("A bigger test specification") {
 object SecondSpecification extends Properties("A second specification") {
   // TODO: not a very original example, just like the other ones...
   property("Check string length") = forAll { n: Int =>
-    (n >= 0 && n < 10000) ==> ((List.fill(n)("").length == n)
+    (n >= 0 && n < 10000) ==> ((List.fill(n)("").length == n))
   }
 }
 
