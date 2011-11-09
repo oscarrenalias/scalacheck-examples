@@ -51,17 +51,6 @@ class ScalaJUnitTest {
     val r = Rectangle(4, 5)
     assertTrue("Area does not match", r.areaCorrect == (4 * 5))
   }
-  /**
-   * This test cases uses our generator as the source of our random test data; as opposed to a ScalaCheck property,
-   * we are only using 1 random value per test execution. Please refer to the source code of the Rectangle class for this
-   * scenario, where the area method contains a bug that calculates the wrong area if the width is divisible by 2. This
-   * issue would not be reported as a failure of a test case in about 33% of the test runs, while it would be systematically
-   * highlighted as a failure when using pure ScalaCheck code
-   */
-  @Test def simpleTestWithGenerator = {
-    import RectangleGenerator._
-    rectangleGen.sample map (r => assertTrue("Area is not correct", r.area == (r.height * r.width))) getOrElse assertTrue(false)
-  }
 
   /**
    * Two properties for our testing purposes. The first one fails, while
